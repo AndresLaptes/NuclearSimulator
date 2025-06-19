@@ -1,0 +1,7 @@
+{
+    "files.associations": {
+        "*.txt": "alex",
+        "iostream": "cpp",
+        "string": "cpp"
+    }
+}

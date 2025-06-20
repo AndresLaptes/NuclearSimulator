@@ -3,16 +3,20 @@
 #include <iostream>
 using namespace std;
 
-Window::Window(uint width, uint height, const char* title) {
+Window::Window(uint width, uint height) {
     if (!glfwInit()) cout << "Error" << endl; //Error
 
     fullscrean = false;
-    window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+    window = glfwCreateWindow(width, height, "Nuclear Simulator", nullptr, nullptr);
 
     if (!window) cout << "Error crear window" << endl;
 
     glfwGetWindowPos(window, &windowPosX, &windowPosY);
     glfwGetWindowSize(window, &windowWidth, &windowHeight);
+
+    glfwSetWindowUserPointer(window, this);
+    glfwSetKeyCallback(window, KeyCallback);
+    inicializarMapa();
 }
 
 void Window::endWindow() {
@@ -33,6 +37,23 @@ void Window::Fullscrean() {
     } else {
         glfwSetWindowMonitor(window, nullptr, windowPosX, windowPosY, windowWidth, windowHeight, 0);
     }
+
+}
+
+void Window::KeyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
+    if (action != GLFW_PRESS) return;
+
+    Window* self = static_cast<Window*>(glfwGetWindowUserPointer(win));
+    auto it = self->keyActions.find(key);
+    if (it != self->keyActions.end()) {
+        it->second();  // Llama a la lambda registrada
+    }
+}
+
+void Window::inicializarMapa() {
+    keyActions[GLFW_KEY_F11] = [this]() {
+        Fullscrean();
+    };
 }
 
 void Window::run() {
@@ -40,15 +61,7 @@ void Window::run() {
     glfwMakeContextCurrent(window);
 
     while (!glfwWindowShouldClose(window)) {
-        
-        if (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS) {
-            Fullscrean();
-            // Esperar hasta que se libere la tecla para evitar múltiples llamadas
-            while (glfwGetKey(window, GLFW_KEY_F11) == GLFW_PRESS)
-                glfwPollEvents();
-        }
 
-        
         //Color por defecto negro
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);

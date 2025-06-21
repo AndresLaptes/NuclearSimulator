@@ -1,5 +1,6 @@
 #ifndef WINDOW_H
 #define WINDOW_H
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <i386-linux-gnu/sys/types.h>
 #include <string>
@@ -19,6 +20,7 @@ class Window {
         
         //Interacciones la pantalla
         void inicializarMapa();
+        void drawObjects();
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
     public:
         Window(uint width, uint height);

@@ -1,5 +1,6 @@
 #include "Window.h"
 #include <GLFW/glfw3.h>
+#include <glad/glad.h>
 #include <iostream>
 using namespace std;
 
@@ -46,7 +47,7 @@ void Window::KeyCallback(GLFWwindow *win, int key, int scancode, int action, int
     Window* self = static_cast<Window*>(glfwGetWindowUserPointer(win));
     auto it = self->keyActions.find(key);
     if (it != self->keyActions.end()) {
-        it->second();  // Llama a la lambda registrada
+        it->second();  // Llama a la lambda funcion
     }
 }
 
@@ -56,9 +57,18 @@ void Window::inicializarMapa() {
     };
 }
 
+void Window::drawObjects() {
+    
+}
+
 void Window::run() {
     
     glfwMakeContextCurrent(window);
+
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        std::cerr << "Failed to initialize GLAD" << std::endl;
+        return;
+    }
 
     while (!glfwWindowShouldClose(window)) {
 

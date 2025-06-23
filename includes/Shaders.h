@@ -1,7 +1,7 @@
 #ifndef SHADERS_H
 #define SHADERS_H
 #include <glad/glad.h>
-#include <glm/glm.hpp>
+#include <glm/glm.hpp> 
 #include <string>
 
 class Shaders {

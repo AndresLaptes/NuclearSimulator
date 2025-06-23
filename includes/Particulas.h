@@ -6,7 +6,7 @@
 
 class Particulas {
     private:
-        float tipoRadioEscena();
+        float tipoRadioEscena() const;
 
     protected:
         const float ESCENA_PROTON = 1.0f;
@@ -32,15 +32,15 @@ class Particulas {
         virtual int getTipo() const = 0;
         virtual void setPosicion(glm::vec3 p);
         virtual void updatePosicion(glm::vec3 p); //actual + p
-        virtual void drawParticula(Shaders& shaders);
+        virtual void drawParticula();
         virtual void cleanUp();
 
-        double getMasa() const;
-        double getRadio() const ;
-        double getCarga() const;
+        virtual double getMasa() const;
+        virtual double getRadio() const ;
+        virtual double getCarga() const;
         glm::vec3 getPosicion() const;
-
         
+        glm::mat4 getModelMatrix() const;
 };
 
 

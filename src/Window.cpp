@@ -15,6 +15,7 @@ Window::Window(uint width, uint height) {
     if (!glfwInit()) cout << "Error" << endl; //Error
 
     fullscrean = false;
+    velocidad = 1.0f;
     window = glfwCreateWindow(width, height, "Nuclear Simulator", nullptr, nullptr);
 
     if (!window) cout << "Error crear window" << endl;
@@ -50,6 +51,24 @@ void Window::endWindow() {
     glfwTerminate();
 }
 
+void Window::move(glm::vec3 dir) {
+    float velocityDelta = velocidad * deltaTime;
+    cameraPos += dir * velocityDelta;
+    cameraTarget += dir * velocityDelta;
+}
+
+void Window::processHeldKeys() {
+    for (const auto& pair : keysPressed) {
+        if (pair.second) { // Tecla presionada
+            auto it = keyActions.find(pair.first);
+            if (it != keyActions.end()) {
+                it->second();
+            }
+        }
+    }
+}
+
+
 void Window::Fullscrean() {
     fullscrean = !fullscrean;
 
@@ -68,18 +87,48 @@ void Window::Fullscrean() {
 }
 
 void Window::KeyCallback(GLFWwindow *win, int key, int scancode, int action, int mods) {
-    if (action != GLFW_PRESS) return;
-
     Window* self = static_cast<Window*>(glfwGetWindowUserPointer(win));
-    auto it = self->keyActions.find(key);
-    if (it != self->keyActions.end()) {
-        it->second();  // Llama a la lambda funcion
+    if (!self) return;
+
+    if (action == GLFW_PRESS) {
+        self->keysPressed[key] = true;
+
+        auto it = self->oneTimeKeyActions.find(key);
+        if (it != self->oneTimeKeyActions.end()) {
+            it->second();
+        }
+    } else if (action == GLFW_RELEASE) {
+        self->keysPressed[key] = false;
     }
 }
 
 void Window::inicializarMapa() {
-    keyActions[GLFW_KEY_F11] = [this]() {
+    oneTimeKeyActions[GLFW_KEY_F11] = [this]() {
         Fullscrean();
+    };
+
+    keyActions[GLFW_KEY_A] = [this]() {
+        move(glm::vec3(-1, 0, 0));
+    };
+
+    keyActions[GLFW_KEY_D] = [this]() {
+        move(glm::vec3(1, 0, 0));
+    };
+
+    keyActions[GLFW_KEY_W] = [this]() {
+        move(glm::vec3(0, 0, -1));
+    };
+
+    keyActions[GLFW_KEY_S] = [this]() {
+        move(glm::vec3(0, 0, 1));
+    };
+
+    keyActions[GLFW_KEY_SPACE] = [this]() {
+        move(glm::vec3(0, 1, 0));
+    };
+
+    keyActions[GLFW_KEY_LEFT_SHIFT] = [this]() {
+        move(glm::vec3(0, -1, 0));
     };
 }
 
@@ -139,6 +188,12 @@ void Window::inicializarShaders() {
     shaders->use();
 }
 
+void Window::calcularDelta() {
+    float currentFrame = glfwGetTime();
+    deltaTime = currentFrame - lastFrame;
+    lastFrame = currentFrame;
+}
+
 void Window::run() {
     glfwMakeContextCurrent(window);
 
@@ -162,8 +217,11 @@ void Window::run() {
     }
 
     while (!glfwWindowShouldClose(window)) {
+        calcularDelta();
+        
         glClearColor(0.1f, 0.05f, 0.1f, 1.0f); //Color de fondo
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        processHeldKeys();
 
 
         updateCamera();       

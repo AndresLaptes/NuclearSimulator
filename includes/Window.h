@@ -19,11 +19,22 @@ class Window {
         int windowPosX, windowPosY, windowWidth, windowHeight;
         int currentWidth, currentHeight;
 
+        unordered_map<int, std::function<void()>> oneTimeKeyActions;
         unordered_map<int, function<void()>> keyActions;
+        unordered_map<int, bool> keysPressed;
+        
+        float deltaTime = 0.0f;
+        float lastFrame = 0.0f;
+        void calcularDelta();
 
         void Fullscrean();
-        
+        void processHeldKeys();
+
+        //Movimientos Camera
+        void move(glm::vec3 dir);
+
         //Camera
+        float velocidad;
         glm::mat4 view;
         glm::mat4 projection;
         glm::vec3 cameraPos;

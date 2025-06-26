@@ -24,7 +24,26 @@ Window::Window(uint width, uint height) {
 
     glfwSetWindowUserPointer(window, this);
     glfwSetKeyCallback(window, KeyCallback);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     inicializarMapa();
+}
+
+void Window::framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    Window* win = static_cast<Window*>(glfwGetWindowUserPointer(window));
+    if (win) {
+        win->updateViewport(width, height);
+    }
+}
+
+void Window::updateViewport(int width, int height) {
+    currentWidth = width;
+    currentHeight = height;
+    
+    glViewport(0, 0, width, height);
+    
+    // Recalcular matriz de proyección con el nuevo aspect ratio
+    float aspectRatio = (float)width / (float)height;
+    projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 }
 
 void Window::endWindow() {
@@ -97,7 +116,8 @@ void Window::setUpCamera() {
 
 void Window::updateCamera() {
     view = glm::lookAt(cameraPos, cameraTarget, cameraUp);
-    projection = glm::perspective(glm::radians(45.0f), (float)windowWidth / (float)windowHeight, 0.1f, 100.0f);
+    float aspectRatio = (float)currentWidth / (float)currentHeight;
+    projection = glm::perspective(glm::radians(45.0f), aspectRatio, 0.1f, 100.0f);
 }
 
 void Window::enviarUniforms() {
@@ -128,6 +148,8 @@ void Window::run() {
     }
 
     glEnable(GL_DEPTH_TEST);
+    glfwGetFramebufferSize(window, &currentWidth, &currentHeight);
+    updateViewport(currentWidth, currentHeight);
 
     setUpCamera();
     inicializarShaders();

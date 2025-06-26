@@ -17,7 +17,8 @@ class Window {
         GLFWwindow* window;
         bool fullscrean;
         int windowPosX, windowPosY, windowWidth, windowHeight;
-           
+        int currentWidth, currentHeight;
+
         unordered_map<int, function<void()>> keyActions;
 
         void Fullscrean();
@@ -40,13 +41,12 @@ class Window {
         void drawObjects();
         void setUpCamera();
         void updateCamera();
+        static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+        void updateViewport(int width, int height);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 
         //Objetos
         vector<Particulas*> particulas;
-
-        //TEMPORAL 
-        GLuint VAO, VBO, EBO;
     public:
         Window(uint width, uint height);
         

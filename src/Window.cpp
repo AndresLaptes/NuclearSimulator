@@ -154,6 +154,7 @@ void Window::run() {
     setUpCamera();
     inicializarShaders();
     particulas.push_back(new Proton(glm::vec3(0,0,0)));
+    particulas.push_back(new Proton(glm::vec3(2,0,0)));
 
 
     if (!Particulas::inicializado) {
@@ -161,8 +162,7 @@ void Window::run() {
     }
 
     while (!glfwWindowShouldClose(window)) {
-        //Color por defecto de fondo negro
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+        glClearColor(0.1f, 0.05f, 0.1f, 1.0f); //Color de fondo
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 

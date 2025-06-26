@@ -5,6 +5,10 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include "Proton.h"
+
+#include <fstream>
+#include <sstream>
+#include <iostream>
 using namespace std;
 
 Window::Window(uint width, uint height) {
@@ -77,7 +81,7 @@ void Window::drawObjects() {
             case 2: color = glm::vec3(0, 1, 0); break; // Neutron -> verde
             case 3: color = glm::vec3(0, 0, 1); break; // Electron -> azul
         }
-        shaders->setVec3("color", color);
+        shaders->setVec3("color2", color);
 
         p->drawParticula();
     }
@@ -111,12 +115,11 @@ void Window::enviarUniforms() {
 }
 
 void Window::inicializarShaders() {
-    shaders = new Shaders("../shaders/vertexShader.glsl", "../shaders/fragmentShader.glsl");
+    shaders = new Shaders("shaders/vertexShader.vert", "shaders/fragmentShader.frag");
     shaders->use();
 }
 
 void Window::run() {
-    particulas.push_back(new Proton(glm::vec3(0,0,0)));
     glfwMakeContextCurrent(window);
 
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
@@ -124,13 +127,22 @@ void Window::run() {
         return;
     }
 
+    glEnable(GL_DEPTH_TEST);
+
     setUpCamera();
     inicializarShaders();
+    particulas.push_back(new Proton(glm::vec3(0,0,0)));
+
+
+    if (!Particulas::inicializado) {
+        Particulas::initMesh();
+    }
 
     while (!glfwWindowShouldClose(window)) {
         //Color por defecto de fondo negro
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 
         updateCamera();       
         shaders->use();

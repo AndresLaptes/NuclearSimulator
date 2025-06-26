@@ -44,6 +44,9 @@ class Window {
 
         //Objetos
         vector<Particulas*> particulas;
+
+        //TEMPORAL 
+        GLuint VAO, VBO, EBO;
     public:
         Window(uint width, uint height);
         

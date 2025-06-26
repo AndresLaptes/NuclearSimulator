@@ -17,12 +17,10 @@ class Particulas {
         double radio; //m
         double carga; //Colombus
         
-        static unsigned int VAO, VBO, EBO; // Esfera compartida entre todas
+        static GLuint VAO, VBO, EBO; // Esfera compartida entre todas
         static int indexCount;
-        static bool inicializado;
 
         glm::vec3 posicion;
-        static void initMesh(); //Inicializar los VAO's
         Particulas(double m, double r, double c, glm::vec3 p) : masa(m), radio(r), carga(c), posicion(p) {
             if (not inicializado) initMesh();
         }
@@ -41,6 +39,10 @@ class Particulas {
         glm::vec3 getPosicion() const;
         
         glm::mat4 getModelMatrix() const;
+
+        static bool inicializado;
+        static void initMesh(); //Inicializar los VAO's
+
 };
 
 

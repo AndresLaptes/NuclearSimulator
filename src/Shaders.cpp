@@ -2,61 +2,72 @@
 #include <fstream>
 #include <sstream>
 #include <iostream>
+using namespace std;
 
-Shaders::Shaders(const char* vertexPath, const char* fragmentPath) {
-    std::ifstream vFile(vertexPath), fFile(fragmentPath);
-    std::stringstream vStream, fStream;
+string Shaders::loadShader(const std::string& filename) {
+    ifstream file(filename);
+    stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
 
-    vStream << vFile.rdbuf();
-    fStream << fFile.rdbuf();
+GLuint Shaders::copilarShader(GLenum type, const string& source) {
+    GLuint shader = glCreateShader(type);
+    const char* src = source.c_str();
+    glShaderSource(shader, 1, &src, nullptr);
+    glCompileShader(shader);
 
-    std::string vCode = vStream.str();
-    std::string fCode = fStream.str();
+    int success;
+    glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
+    if (!success) {
+        char info[512];
+        glGetShaderInfoLog(shader, 512, nullptr, info);
+        cerr << "Error al compilar shader: " << info << endl;
+    }
+    return shader;
+}
 
-    const char* vShaderCode = vCode.c_str();
-    const char* fShaderCode = fCode.c_str();
 
-    unsigned int vertex = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertex, 1, &vShaderCode, NULL);
-    glCompileShader(vertex);
+Shaders::Shaders(const string& vsFile, const string& fsFile) {
+    string vsSource = loadShader(vsFile);
+    string fsSource = loadShader(fsFile);
 
-    unsigned int fragment = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragment, 1, &fShaderCode, NULL);
-    glCompileShader(fragment);
+    GLuint vs = copilarShader(GL_VERTEX_SHADER, vsSource);
+    GLuint fs = copilarShader(GL_FRAGMENT_SHADER, fsSource);
 
-    ID = glCreateProgram();
-    glAttachShader(ID, vertex);
-    glAttachShader(ID, fragment);
-    glLinkProgram(ID);
+    program = glCreateProgram();
+    glAttachShader(program, vs);
+    glAttachShader(program, fs);
+    glLinkProgram(program);
 
-    glDeleteShader(vertex);
-    glDeleteShader(fragment);
+    glDeleteShader(vs);
+    glDeleteShader(fs);
 }
 
 void Shaders::use() const {
-    glUseProgram(ID);
+    glUseProgram(program);
 }
 
 void Shaders::setBool(const std::string &name, bool value) const {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), (int)value);
+    glUniform1i(glGetUniformLocation(program, name.c_str()), (int)value);
 }
 void Shaders::setInt(const std::string &name, int value) const {
-    glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1i(glGetUniformLocation(program, name.c_str()), value);
 }
 void Shaders::setFloat(const std::string &name, float value) const {
-    glUniform1f(glGetUniformLocation(ID, name.c_str()), value);
+    glUniform1f(glGetUniformLocation(program, name.c_str()), value);
 }
 void Shaders::setVec3(const std::string &name, const glm::vec3 &value) const {
-    glUniform3fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+    glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
 }
-void Shaders::setVec4(const std::string &name, const glm::vec3 &value) const {
-    glUniform4fv(glGetUniformLocation(ID, name.c_str()), 1, &value[0]);
+void Shaders::setVec4(const std::string &name, const glm::vec4 &value) const {
+    glUniform4fv(glGetUniformLocation(program, name.c_str()), 1, &value[0]);
 }
 
 void Shaders::setMat4(const std::string &name, const glm::mat4 &mat) const {
-    glUniformMatrix4fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }
 
 void Shaders::setMat3(const std::string &name, const glm::mat3 &mat) const {
-    glUniformMatrix3fv(glGetUniformLocation(ID, name.c_str()), 1, GL_FALSE, &mat[0][0]);
+    glUniformMatrix3fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, &mat[0][0]);
 }

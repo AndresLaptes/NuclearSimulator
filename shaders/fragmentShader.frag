@@ -3,7 +3,6 @@
 in vec3 N;
 in vec3 L;
 in vec3 V;
-in vec3 color2;
 out vec4 fragColor;
 
 uniform mat4 modelViewMatrix;
@@ -18,6 +17,8 @@ uniform vec4 matAmbient;
 uniform vec4 matDiffuse;
 uniform vec4 matSpecular;
 uniform float matShininess;
+uniform vec3 color2;
+
 
 vec4 Phong(vec3 N, vec3 V, vec3 L) {
     V = normalize(V);

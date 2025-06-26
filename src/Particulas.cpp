@@ -3,11 +3,12 @@
 #include <vector>
 using namespace std;
 
-unsigned int Particulas::VAO = 0;
-unsigned int Particulas::VBO = 0;
-unsigned int Particulas::EBO = 0;
+GLuint Particulas::VAO = 0;
+GLuint Particulas::VBO = 0;
+GLuint Particulas::EBO = 0;
 int Particulas::indexCount = 0;
 bool Particulas::inicializado = false;
+
 
 void Particulas::initMesh() {
     const int sectorCount = 36; //aumentar esto aumenta calidad esferas

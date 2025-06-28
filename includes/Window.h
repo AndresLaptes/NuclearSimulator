@@ -31,7 +31,14 @@ class Window {
         void processHeldKeys();
 
         //Movimientos Camera
+        bool rightMousePressed;
+        double lastMouseX, lastMouseY;
+        float yaw, pitch;
+        float radius;
+        static void mouseButtonCallback(GLFWwindow* win, int button, int action, int mods);
+        static void mouseCallback(GLFWwindow* win, double xpos, double ypos);
         void move(glm::vec3 dir);
+        void velocidadCamera(float p); //Temporal
 
         //Camera
         float velocidad;
@@ -53,6 +60,7 @@ class Window {
         void setUpCamera();
         void updateCamera();
         static void framebufferSizeCallback(GLFWwindow* window, int width, int height);
+        static void scrollCallback(GLFWwindow* win, double xoffset, double yoffset);
         void updateViewport(int width, int height);
         static void KeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 

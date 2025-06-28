@@ -11,7 +11,7 @@ class Particulas {
     protected:
         const float ESCENA_PROTON = 1.0f;
         const float ESCENA_NEUTRON = 1.035f;
-        const float ESCENA_ELECTRON = 0.001f;
+        const float ESCENA_ELECTRON = 0.1f;
 
         double masa; //Kg
         double radio; //m
